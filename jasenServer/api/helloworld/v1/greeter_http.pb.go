@@ -19,45 +19,45 @@ var _ = binding.EncodeURL
 
 const _ = http.SupportPackageIsVersion1
 
+const OperationGreeterCreateGreeter = "/helloworld.v1.Greeter/CreateGreeter"
 const OperationGreeterFindById = "/helloworld.v1.Greeter/FindById"
-const OperationGreeterSayHello = "/helloworld.v1.Greeter/SayHello"
 
 type GreeterHTTPServer interface {
-	FindById(context.Context, *IdRequest) (*IdReply, error)
-	SayHello(context.Context, *HelloRequest) (*HelloReply, error)
+	CreateGreeter(context.Context, *CreateRequest) (*CreateReply, error)
+	FindById(context.Context, *FindRequest) (*FindReply, error)
 }
 
 func RegisterGreeterHTTPServer(s *http.Server, srv GreeterHTTPServer) {
 	r := s.Route("/")
-	r.GET("/helloworld/{name}", _Greeter_SayHello0_HTTP_Handler(srv))
+	r.GET("/greeter/create/{name}", _Greeter_CreateGreeter0_HTTP_Handler(srv))
 	r.GET("/greeter/{id}", _Greeter_FindById0_HTTP_Handler(srv))
 }
 
-func _Greeter_SayHello0_HTTP_Handler(srv GreeterHTTPServer) func(ctx http.Context) error {
+func _Greeter_CreateGreeter0_HTTP_Handler(srv GreeterHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
-		var in HelloRequest
+		var in CreateRequest
 		if err := ctx.BindQuery(&in); err != nil {
 			return err
 		}
 		if err := ctx.BindVars(&in); err != nil {
 			return err
 		}
-		http.SetOperation(ctx, OperationGreeterSayHello)
+		http.SetOperation(ctx, OperationGreeterCreateGreeter)
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-			return srv.SayHello(ctx, req.(*HelloRequest))
+			return srv.CreateGreeter(ctx, req.(*CreateRequest))
 		})
 		out, err := h(ctx, &in)
 		if err != nil {
 			return err
 		}
-		reply := out.(*HelloReply)
+		reply := out.(*CreateReply)
 		return ctx.Result(200, reply)
 	}
 }
 
 func _Greeter_FindById0_HTTP_Handler(srv GreeterHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
-		var in IdRequest
+		var in FindRequest
 		if err := ctx.BindQuery(&in); err != nil {
 			return err
 		}
@@ -66,20 +66,20 @@ func _Greeter_FindById0_HTTP_Handler(srv GreeterHTTPServer) func(ctx http.Contex
 		}
 		http.SetOperation(ctx, OperationGreeterFindById)
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-			return srv.FindById(ctx, req.(*IdRequest))
+			return srv.FindById(ctx, req.(*FindRequest))
 		})
 		out, err := h(ctx, &in)
 		if err != nil {
 			return err
 		}
-		reply := out.(*IdReply)
+		reply := out.(*FindReply)
 		return ctx.Result(200, reply)
 	}
 }
 
 type GreeterHTTPClient interface {
-	FindById(ctx context.Context, req *IdRequest, opts ...http.CallOption) (rsp *IdReply, err error)
-	SayHello(ctx context.Context, req *HelloRequest, opts ...http.CallOption) (rsp *HelloReply, err error)
+	CreateGreeter(ctx context.Context, req *CreateRequest, opts ...http.CallOption) (rsp *CreateReply, err error)
+	FindById(ctx context.Context, req *FindRequest, opts ...http.CallOption) (rsp *FindReply, err error)
 }
 
 type GreeterHTTPClientImpl struct {
@@ -90,11 +90,11 @@ func NewGreeterHTTPClient(client *http.Client) GreeterHTTPClient {
 	return &GreeterHTTPClientImpl{client}
 }
 
-func (c *GreeterHTTPClientImpl) FindById(ctx context.Context, in *IdRequest, opts ...http.CallOption) (*IdReply, error) {
-	var out IdReply
-	pattern := "/greeter/{id}"
+func (c *GreeterHTTPClientImpl) CreateGreeter(ctx context.Context, in *CreateRequest, opts ...http.CallOption) (*CreateReply, error) {
+	var out CreateReply
+	pattern := "/greeter/create/{name}"
 	path := binding.EncodeURL(pattern, in, true)
-	opts = append(opts, http.Operation(OperationGreeterFindById))
+	opts = append(opts, http.Operation(OperationGreeterCreateGreeter))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
 	if err != nil {
@@ -103,11 +103,11 @@ func (c *GreeterHTTPClientImpl) FindById(ctx context.Context, in *IdRequest, opt
 	return &out, err
 }
 
-func (c *GreeterHTTPClientImpl) SayHello(ctx context.Context, in *HelloRequest, opts ...http.CallOption) (*HelloReply, error) {
-	var out HelloReply
-	pattern := "/helloworld/{name}"
+func (c *GreeterHTTPClientImpl) FindById(ctx context.Context, in *FindRequest, opts ...http.CallOption) (*FindReply, error) {
+	var out FindReply
+	pattern := "/greeter/{id}"
 	path := binding.EncodeURL(pattern, in, true)
-	opts = append(opts, http.Operation(OperationGreeterSayHello))
+	opts = append(opts, http.Operation(OperationGreeterFindById))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
 	if err != nil {

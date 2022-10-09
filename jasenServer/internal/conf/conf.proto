@@ -39,3 +39,8 @@ message Data {
   Database database = 1;
   Redis redis = 2;
 }
+
+enum ErrorCoode {
+  USER_NOT_FOUND = 0;
+
+}

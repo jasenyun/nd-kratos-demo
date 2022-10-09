@@ -12,13 +12,13 @@ option java_outer_classname = "HelloworldProtoV1";
 // The greeting service definition.
 service Greeter {
   // Sends a greeting
-  rpc SayHello (HelloRequest) returns (HelloReply) {
+  rpc CreateGreeter (CreateRequest) returns (CreateReply) {
     option (google.api.http) = {
-      get: "/helloworld/{name}"
+      get: "/greeter/create/{name}"
     };
   }
 
-  rpc FindById(IdRequest) returns (IdReply) {
+  rpc FindById(FindRequest) returns (FindReply) {
     option (google.api.http) = {
       get: "/greeter/{id}"
     };
@@ -26,20 +26,20 @@ service Greeter {
 }
 
 // The request message containing the user's name.
-message HelloRequest {
+message CreateRequest {
   string name = 1;
 }
 
 // The response message containing the greetings
-message HelloReply {
+message CreateReply {
   string message = 1;
 }
 
-message  IdRequest {
+message  FindRequest {
   int64 id = 1;
 }
 
-message  IdReply {
+message  FindReply {
   int64 id = 1;
   string name =2;
 }
